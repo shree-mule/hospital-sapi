@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="deleteHospitalDetailsSub_Flow" doc:id="35649a7a-0b3b-459c-87fa-956bf2fbc1a1" >
+		<logger level="INFO" doc:name="Process Started" doc:id="8b40b43b-190e-4bf1-844e-54adb9f84ca0" message="#########Delete Hospital records############"/>
+		<db:delete doc:name="Database" doc:id="3e526580-1f6e-445a-9544-f071deba32dd" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM `Hospital` WHERE hospitalId = :hospitalId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	hospitalId: payload.hospitalId
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Json Payload" doc:id="46f2e0b8-5725-4a27-896a-94741c772279" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "deleted the record"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

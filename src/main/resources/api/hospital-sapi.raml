@@ -1,0 +1,84 @@
+#%RAML 1.0
+title: hospital-sapi
+
+mediaType: application/json
+
+uses:
+  mylib : exchange_modules/d2d97777-b4e2-416d-86db-77cd5a0da3e4/common-fragment/1.0.1/common-fragment.raml
+
+protocols:
+  - HTTP
+  - HTTPS
+
+types:
+  GetAllHospitalDetailsRequest: !include /dataTypes/GetAllHospitalDetailsDataType.raml
+  GetAllHospitalDetailsByIdRequest: !include /dataTypes/GetHospitalDetailsByIdDataTypes.raml
+  PostHospitalDetailsRequest: !include /dataTypes/PostHospitalDetailsDataTypes.raml
+  PostHospitalDetailsResponse: !include /dataTypes/PostHospitalDetailsResponseDataType.raml
+  DeleteHospitalDetailsRequest : !include /dataTypes/DeleteHospitalDetailsRequest.raml
+  DeleteHospitalDetailsResponse : !include /dataTypes/DeleteHospitalDetailsResponse.raml
+  UpdateHospitalDetailsRequest : !include /dataTypes/UpdateHospitalDetailsRequest.raml
+  UpdateHospitalDetailsResponse : !include /dataTypes/UpdateHospitalDetailsResponse.raml
+
+
+/createHospital:
+  post:
+    is: [mylib.common-error, mylib.client-id-secret-required]
+    body:
+      application/json:
+        type: PostHospitalDetailsRequest
+    responses:
+      201:
+        body:
+          application/json:
+            type: PostHospitalDetailsResponse
+      
+
+/retrieveHospital/{hospitalId}:
+  get:
+    is: [mylib.common-error, mylib.client-id-secret-required]
+    responses:
+      200:
+        body:
+          application/json:
+               type: GetAllHospitalDetailsByIdRequest
+
+/retrieveAllHospitals:
+  get:
+    is: [mylib.common-error, mylib.client-id-secret-required]
+    responses:
+      200:
+        body:
+          application/json:
+            type: GetAllHospitalDetailsRequest
+
+/deleteHospital:
+  delete:
+    is: [mylib.common-error, mylib.client-id-secret-required]
+    body:
+      application/json:
+        type: DeleteHospitalDetailsRequest
+         
+    responses:
+      201:
+        body:
+          application/json:
+            type: DeleteHospitalDetailsResponse
+            
+
+/updateHospital:
+  patch:
+    is: [mylib.common-error, mylib.client-id-secret-required]
+    body:
+      application/json:
+        type: UpdateHospitalDetailsRequest
+         
+    responses:
+      201:
+        body:
+          application/json:
+            type: UpdateHospitalDetailsResponse
+              
+
+
+      

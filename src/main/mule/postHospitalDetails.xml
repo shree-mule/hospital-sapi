@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	
+	
+	<sub-flow name="postHospitalDetailsSub_Flow" doc:id="739d6520-a137-4242-a1b4-7f61a441960e" >
+		<logger level="INFO" doc:name="Process Started" doc:id="bcdeadd8-354d-42f9-8113-4eebac583933" message="######### Create Hospital Details#########"/>
+		<db:insert doc:name="Database" doc:id="ad568aeb-ab4c-4b8d-9774-c7dd76c88b2a" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO `Hospital`(`hospitalId`, `hospitalName`, `address`, `numberOfBeds`) VALUES (:hospitalId, :hospitalName, :address,:numberOfBeds);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  hospitalId: payload.hospitalId,
+  hospitalName: payload.hospitalName,
+  address: payload.address,
+  numberOfBeds: payload.numberOfBeds
+  
+}]]]></db:input-parameters>
+		</db:insert>
+		<choice doc:name="Choice" doc:id="4fdee7ab-6e85-4b9d-8ed7-db73b68dbb6c" >
+			<when expression="#[payload.affectedRows &gt; 0]">
+				<ee:transform doc:name="Json Payload" doc:id="f85d7db3-811e-49d9-9e9f-0b435a3ef8bc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "created hospital details"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="648f8683-def6-435e-8215-6468caf24049" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "unable to create hospital details"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Process Ends" doc:id="d9682c2a-912d-42d3-9ba2-f6da20e193ec" message="Ends"/>
+	</sub-flow>
+</mule>

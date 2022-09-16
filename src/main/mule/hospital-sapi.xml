@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    
+    
+    <flow name="hospital-sapi-main">
+        <http:listener path="/api/*" config-ref="HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="hospital-sapi-config" />
+    </flow>
+    <flow name="delete:\deleteHospital:application\json:hospital-sapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="a874a1e5-bd72-47bb-85b3-81499aeb2736" name="deleteHospitalDetailsSub_Flow"/>
+    </flow>
+    <flow name="patch:\updateHospital:application\json:hospital-sapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="019c3260-9857-4a9a-9e5a-7b2bd1993312" name="patchHospitalDetailsSub_Flow"/>
+    </flow>
+    <flow name="get:\retrieveAllHospitals:hospital-sapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="2e2a62d7-15e3-4990-90ce-59b120af6fd5" name="getHospitalsDetailsSub_Flow"/>
+    </flow>
+    <flow name="get:\retrieveHospital\(hospitalId):hospital-sapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="184c7956-c353-45ba-80b1-0de7ae42f85d" name="getHospitalDetailsByIdSub_Flow"/>
+    </flow>
+    <flow name="post:\createHospital:application\json:hospital-sapi-config">
+		<flow-ref doc:name="Flow Reference" doc:id="7f11d169-3e89-4a18-9faa-95875af7dea1" name="postHospitalDetailsSub_Flow"/>
+    </flow>
+</mule>

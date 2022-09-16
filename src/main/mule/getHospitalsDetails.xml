@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="getHospitalsDetailsSub_Flow" doc:id="d972acc3-c282-41a1-9609-95fcaa537e82" >
+		<logger level="INFO" doc:name="Process Started" doc:id="df87767d-2481-4ca6-893f-445582218cd4" message="############Retrive All Hospital Details########"/>
+		<db:select doc:name="Database" doc:id="fc73efc9-6f0f-401c-9630-79b08dad327c" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM `Hospital`]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Json Payload" doc:id="78ddaab0-f3e1-4840-8569-4b3c016fcef1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

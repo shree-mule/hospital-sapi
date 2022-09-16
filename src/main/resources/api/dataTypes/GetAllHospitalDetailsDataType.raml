@@ -1,0 +1,21 @@
+#%RAML 1.0 DataType
+
+type: array
+items: 
+    
+  type: object
+  properties: 
+    hospitalId: 
+      type: string
+    
+    hospitalName: 
+      type: string
+    
+    address: 
+      type: string
+    
+    numberOfBeds: 
+      type: number
+
+example: !include ../examples/GetAllHospitalDetailsExample.raml
+  

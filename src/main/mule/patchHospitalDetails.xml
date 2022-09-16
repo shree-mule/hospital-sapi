@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="patchHospitalDetailsSub_Flow" doc:id="38483827-629d-47a6-a26d-4e0ae078cd16" >
+		<logger level="INFO" doc:name="Process Starts" doc:id="a588f041-2ddb-475e-a367-fc68e1f32278" message="############# Update Hostpital Details#########"/>
+		<db:update doc:name="Database" doc:id="56a9925c-3637-4acd-b656-e490ed929874" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE `Hospital` SET `hospitalId`= :hospitalId,`hospitalName`=:hospitalName,`address`=:address,`numberOfBeds`=:numberOfBeds WHERE hospitalId=:hospitalId;
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	hospitalId: payload.hospitalId,
+	hospitalName: payload.hospitalName,
+	address: payload.address,
+	numberOfBeds: payload.numberOfBeds
+	
+	
+}]]]></db:input-parameters>
+		</db:update>
+		<choice doc:name="Choice" doc:id="ce3074d7-94c1-452d-bd6e-d4795aad5a58" >
+			<when expression="#[payload.affectedRows &gt; 0]">
+				<ee:transform doc:name="Json Payload" doc:id="cd818f48-3975-4bcf-9562-f396c937af04">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "hospital updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="41add43f-0705-41a6-86b6-775a64e4d03c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "unable to updated"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Process Ends" doc:id="014914b8-1fa6-49bc-b46b-a225c31b6918" message="ends"/>
+	</sub-flow>
+</mule>
